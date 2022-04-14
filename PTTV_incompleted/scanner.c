@@ -42,20 +42,33 @@ Token* readIdentKeyword(void) {
 }
 
 Token* readNumber(void) {
+  //tạo token mới
   Token *token;
-  token = makeToken (TK_NUMBER, lineNo, colNo);
-  int count = 0;
+  token = makeToken (TK_NUMBER, lineNo, colNo); // tọa token lưu dãy số
+  int count = 0; //đặt đếm bằng 0
   while(charCodes[currentChar] == CHAR_DIGIT){
-    token->string[count++] = (char)currentChar;
-    readChar();
+    token->string[count++] = (char)currentChar; //khi ký tự là số -> chèn ký tự vào vị trí tiếp theo
+    readChar(); // đọc lý tự ( tiếp theo )
   }
-  token->string[count] = '\0';
-  token->value = atoi(token->string);
+  token->string[count] = '\0'; // chèn ký tự trống \0 vào cuối (để tạo thành string)
+  token->value = atoi(token->string); // chuyển string char thành int
   return token;
 }
 
 Token* readConstChar(void) {
-  // TODO
+  Token *token;
+  int i = 0, ln, cn;
+  ln = lineNo; cn = colNo;
+  token = makeToken(TK_CHAR, lineNo, colNo); // tạo token lưu hằng ký tự
+  readChar(); //đọc ký tự 
+
+  token->string[i++] = (char)currentChar; // lưu ký tự vào token
+  readChar();
+  if(charCodes[currentChar] != CHAR_SINGLEQUOTE){
+    error(ERR_INVALIDCHARCONSTANT, ln, cn);
+  }
+  readChar();
+  return token;
 }
 
 Token* getToken(void) {
