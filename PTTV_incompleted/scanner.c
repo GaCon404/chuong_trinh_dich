@@ -18,17 +18,31 @@ extern CharCode charCodes[];
 
 void skipBlank() {
   while ((currentChar != EOF) && (charCodes[currentChar] == CHAR_SPACE))
-readChar();
+		readChar();
 }
 
 void skipComment() {
-  while(charCodes[currentChar] != CHAR_RPAR){
-    readChar();
-    if(currentChar == EOF){
-      error(ERR_ENDOFCOMMENT, lineNo, colNo);
-    }
-  }
-  readChar();
+  int state = 0;
+	while ((currentChar != EOF) && (state < 2)) {
+		switch (charCodes[currentChar]) {
+			case CHAR_TIMES:{
+				state = 1;
+				break;
+			}
+			case CHAR_RPAR:{
+				if (state == 1) state = 2;
+				else state = 0;
+				break;
+			}
+			default:{
+				state = 0;
+			}
+		}
+		readChar();
+	}
+	if (state != 2) {
+		error(ERR_ENDOFCOMMENT, lineNo, colNo);
+	}
 }
 
 Token* readIdentKeyword(void) {
@@ -127,7 +141,7 @@ Token* getToken(void) {
       readChar();
       return token = makeToken(SB_GE,ln,cn);
     }
-    else error(ERM_INVALIDCHARCONSTANT,ln,cn);
+    else error(ERR_INVALIDCHARCONSTANT,ln,cn);
     return makeToken(TK_NONE, ln, cn);
   case CHAR_EQ:
     token=makeToken(SB_EQ,lineNo,colNo);
