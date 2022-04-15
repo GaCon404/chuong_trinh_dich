@@ -1,3 +1,8 @@
+/* Scanner
+ * @copyright (c) 2008, Hedspi, Hanoi University of Technology
+ * @author Huu-Duc Nguyen
+ * @version 1.0
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,66 +22,75 @@ extern CharCode charCodes[];
 /***************************************************************/
 
 void skipBlank() {
-  while ((currentChar != EOF) && (charCodes[currentChar] == CHAR_SPACE))
-		readChar();
+  // TODO
+    while ((currentChar != EOF) &&
+    (charCodes[currentChar] == CHAR_SPACE))readChar();
 }
 
 void skipComment() {
-  int state = 0;
-	while ((currentChar != EOF) && (state < 2)) {
-		switch (charCodes[currentChar]) {
-			case CHAR_TIMES:{
-				state = 1;
-				break;
-			}
-			case CHAR_RPAR:{
-				if (state == 1) state = 2;
-				else state = 0;
-				break;
-			}
-			default:{
-				state = 0;
-			}
-		}
-		readChar();
-	}
-	if (state != 2) {
-		error(ERR_ENDOFCOMMENT, lineNo, colNo);
-	}
+  // TODO
+  while(charCodes[currentChar] != CHAR_RPAR){
+    readChar();
+    if(currentChar == EOF){
+      error(ERR_ENDOFCOMMENT, lineNo, colNo);
+    }
+  }
+  readChar();
 }
+
+
 
 Token* readIdentKeyword(void) {
-  while(charCodes[currentChar]==CHAR_LETTER)
-  {
-    currentChar++;
-    if(charCodes[currentChar]==CHAR_LETTER||charCodes[currentChar]==CHAR_DIGIT)
-    continue;
-    else readChar();
+  // TODO
+  Token *token;
+  // token->tokenType == TK_IDENT
+  token = makeToken(TK_IDENT, lineNo, colNo);
+  int count = 0;
+  // read string
+  while(charCodes[currentChar] == CHAR_LETTER || charCodes[currentChar] == CHAR_DIGIT){
+    if(count == 16){
+      error(ERR_IDENTTOOLONG,lineNo,colNo);
+      return NULL;
+    }
+    token->string[count++] = (char)currentChar;
+    readChar();
   }
+  TokenType tokenType = checkKeyword(token->string);
+  // check form token
+  if(KW_PROGRAM <= tokenType && tokenType <= KW_TO){
+      token->tokenType = tokenType; 
+  }
+  if(token->tokenType != TK_NONE && token->tokenType != TK_IDENT && token->tokenType != TK_NUMBER && token->tokenType != TK_CHAR && token->tokenType != TK_EOF){
+    token->string[0] = '\0';  
+  }
+  return token;
 }
 
+
+
 Token* readNumber(void) {
-  //tạo token mới
+  // TODO
   Token *token;
-  token = makeToken (TK_NUMBER, lineNo, colNo); // tọa token lưu dãy số
-  int count = 0; //đặt đếm bằng 0
+  token = makeToken (TK_NUMBER, lineNo, colNo);
+  int count = 0;
   while(charCodes[currentChar] == CHAR_DIGIT){
-    token->string[count++] = (char)currentChar; //khi ký tự là số -> chèn ký tự vào vị trí tiếp theo
-    readChar(); // đọc lý tự ( tiếp theo )
+    token->string[count++] = (char)currentChar;
+    readChar();
   }
-  token->string[count] = '\0'; // chèn ký tự trống \0 vào cuối (để tạo thành string)
-  token->value = atoi(token->string); // chuyển string char thành int
+  token->string[count] = '\0';
+  token->value = atoi(token->string);
   return token;
 }
 
 Token* readConstChar(void) {
+  // TODO
   Token *token;
   int i = 0, ln, cn;
   ln = lineNo; cn = colNo;
-  token = makeToken(TK_CHAR, lineNo, colNo); // tạo token lưu hằng ký tự
-  readChar(); //đọc ký tự 
+  token = makeToken(TK_CHAR, lineNo, colNo);
+  readChar();
 
-  token->string[i++] = (char)currentChar; // lưu ký tự vào token
+  token->string[i++] = (char)currentChar;
   readChar();
   if(charCodes[currentChar] != CHAR_SINGLEQUOTE){
     error(ERR_INVALIDCHARCONSTANT, ln, cn);
@@ -91,7 +105,7 @@ Token* getToken(void) {
 
   if (currentChar == EOF) 
     return makeToken(TK_EOF, lineNo, colNo);
-    
+
   switch (charCodes[currentChar]) {
   case CHAR_SPACE: skipBlank(); return getToken();
   case CHAR_LETTER: return readIdentKeyword();
@@ -100,12 +114,14 @@ Token* getToken(void) {
     token = makeToken(SB_PLUS, lineNo, colNo);
     readChar(); 
     return token;
-  case CHAR_MINUS: 
-    token = makeToken(SB_MINUS,lineNo,colNo);
+    // ....
+    // TODO
+  case CHAR_MINUS:
+    token = makeToken(SB_MINUS, lineNo, colNo);
     readChar();
     return token;
   case CHAR_TIMES:
-    token = makeToken(SB_TIMES,lineNo,colNo);
+    token = makeToken(SB_TIMES, lineNo, colNo);
     readChar();
     return token;
   case CHAR_SLASH:
@@ -116,35 +132,32 @@ Token* getToken(void) {
     ln = lineNo;
     cn = colNo;
     readChar();
-    if(currentChar != EOF && charCodes[currentChar]==CHAR_EQ)
-    {
+    if(currentChar != EOF && charCodes[currentChar] == CHAR_EQ){
       readChar();
-      return token = makeToken(SB_LE,ln,cn);
+      return makeToken(SB_LE, ln, cn);
     }
-    else return token = makeToken(SB_LT,ln,cn);
+    return makeToken(SB_LT, ln, cn);
   case CHAR_GT:
     ln = lineNo;
     cn = colNo;
     readChar();
-    if(currentChar != EOF && charCodes[currentChar]==CHAR_EQ)
-    {
+    if(currentChar != EOF && charCodes[currentChar] == CHAR_EQ){
       readChar();
-      return token = makeToken(SB_GE,ln,cn);
+      return makeToken(SB_GE, ln, cn);
     }
-    else return token = makeToken(SB_GT,ln,cn); 
+    return makeToken(SB_GT, ln, cn);
   case CHAR_EXCLAIMATION:
     ln = lineNo;
     cn = colNo;
     readChar();
-    if(currentChar != EOF && charCodes[currentChar]==CHAR_EQ)
-    {
+    if(currentChar != EOF && charCodes[currentChar] == CHAR_EQ){
       readChar();
-      return token = makeToken(SB_GE,ln,cn);
+      return makeToken(SB_NEQ, ln, cn);
     }
-    else error(ERR_INVALIDCHARCONSTANT,ln,cn);
+    error(ERR_INVALIDSYMBOL, ln, cn);
     return makeToken(TK_NONE, ln, cn);
   case CHAR_EQ:
-    token=makeToken(SB_EQ,lineNo,colNo);
+    token = makeToken(SB_EQ, lineNo, colNo);
     readChar();
     return token;
   case CHAR_COMMA:
@@ -159,7 +172,7 @@ Token* getToken(void) {
     {
       return makeToken(SB_RSEL, ln, cn);
     }
-    else return makeToken(SB_PERIOD, ln, cn);
+    return makeToken(SB_PERIOD, ln, cn);  
   case CHAR_COLON:
     ln = lineNo;
     cn = colNo;
@@ -191,6 +204,7 @@ Token* getToken(void) {
     token = makeToken(SB_RPAR, lineNo, colNo);
     readChar();
     return token;
+    // ....
   default:
     token = makeToken(TK_NONE, lineNo, colNo);
     error(ERR_INVALIDSYMBOL, lineNo, colNo);
@@ -299,6 +313,3 @@ if (scan("example2.kpl") == IO_ERROR) {
 return 0;
 
 }
-
-
-
