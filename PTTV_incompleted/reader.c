@@ -8,7 +8,7 @@
 #include "reader.h"
 
 FILE *inputStream;
-FILE *outputFile;
+
 int lineNo, colNo;
 int currentChar;
 
@@ -23,7 +23,7 @@ int readChar(void) {
 }
 
 int openInputStream(char *fileName) {
-  inputStream = fopen("C:\\Users\\Admin\\Documents\\GitHub\\chuong_trinh_dich\\PTTV_incompleted\\example2.kpl", "rt");
+  inputStream = fopen("C:\\Users\\trong\\OneDrive\\Documents\\GitHub\\chuong_trinh_dich\\PTTV_incompleted\\example2.kpl", "rt");
     if (inputStream == NULL)
     {printf("Khong thay");return IO_ERROR;}
     else printf("Da mo xong");
@@ -32,13 +32,6 @@ int openInputStream(char *fileName) {
   colNo = 0;
   readChar();
   return IO_SUCCESS;
-}
-
-int openOutputFile(char *fileName)
-{
-  outputFile = fopen("C:\\Users\\Admin\\Documents\\GitHub\\chuong_trinh_dich\\PTTV_incompleted\\save.txt","a+");
-  lineNo = 1;
-  colNo = 0;
 }
 
 void closeInputStream() {

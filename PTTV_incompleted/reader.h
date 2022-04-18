@@ -14,6 +14,5 @@ int readChar(void);
 int openInputStream(char *fileName); // thieu kieu tra ve, char *fileName
 void closeInputStream(void);
 
-int openOutputFile(char *fileName);
 
 #endif
