@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <string.h>
+#include <limits.h>
 #include "reader.h"
 #include "charcode.h"
 #include "token.h"
@@ -66,8 +68,19 @@ Token* readIdentKeyword(void) {
 Token* readNumber(void) {
   Token *token = makeToken(TK_NUMBER, lineNo, colNo);
   int counter = 0;
-
-  while(charCodes[currentChar] == CHAR_DIGIT) {
+  //dem so ky tu cua so
+  int count = 0;
+  int c = colNo;
+  while (charCodes[currentChar] == CHAR_DIGIT)
+  {
+    count++;
+    colNo++;
+  }
+  // neu so ky tu <9 => ok
+  if(count<=9)
+  {
+    colNo=c;
+    while(charCodes[currentChar] == CHAR_DIGIT) {
     token->string[counter++] = currentChar;
     readChar();
   }
@@ -76,6 +89,44 @@ Token* readNumber(void) {
   token->value = atoi(token->string);
 
   return token;
+  }
+  // neu so ky tu >10 => dua ra thong bao loi
+  else if(count>10)
+  {
+    error(ERR_NUMBERTOOLONG, lineNo, colNo);
+    return token;
+  }
+
+  else{
+    colNo=c;
+    char num[10];
+    int i;
+    for(i=0;i<10;i++)
+    {
+      num[i]=currentChar;
+      colNo++;
+    }
+    // so sanh so vs int_max
+    int check = strcmp(num,"2147483647");
+    if(check>0) // neu so > int_max => bao loi
+    {
+      error(ERR_NUMBERTOOLONG,lineNo,colNo);
+      return token;
+    }
+    else // neu ko, doc vao token
+    {
+      colNo=c;
+    while(charCodes[currentChar] == CHAR_DIGIT) {
+    token->string[counter++] = currentChar;
+    readChar();
+  }
+  
+  token->string[counter] = '\0';
+  token->value = atoi(token->string);
+
+  return token;
+    }
+  }
 }
 
 Token* readConstChar(void) {

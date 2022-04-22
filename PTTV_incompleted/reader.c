@@ -22,6 +22,18 @@ int readChar(void) {
   return currentChar;
 }
 
+int dem(void)
+{
+  int count = 0;
+  int curchar = getc(inputStream);
+  colNo ++;
+  if (curchar == '\n') {
+    lineNo ++;
+    colNo = 0;
+  }
+  return currentChar;
+}
+
 int openInputStream(char *fileName) {
   inputStream = fopen("C:\\Users\\trong\\OneDrive\\Documents\\GitHub\\chuong_trinh_dich\\PTTV_incompleted\\example2.kpl", "rt");
     if (inputStream == NULL)

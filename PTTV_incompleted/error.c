@@ -22,7 +22,12 @@ void error(ErrorCode err, int lineNo, int colNo) {
   case ERR_INVALIDSYMBOL:
     printf("%d-%d:%s\n", lineNo, colNo, ERM_INVALIDSYMBOL);
     break;
+  // them error number too long
+  case ERR_NUMBERTOOLONG : 
+    printf("%d-%d:%s\n", lineNo, colNo, ERM_NUMBERTOOLONG);
+    break;
   }
+  
   exit(-1);
 }
 
