@@ -64,23 +64,12 @@ Token* readIdentKeyword(void) {
 
   return token;
 }
-
+/*
 Token* readNumber(void) {
   Token *token = makeToken(TK_NUMBER, lineNo, colNo);
   int counter = 0;
-  //dem so ky tu cua so
-  int count = 0;
-  int c = colNo;
-  while (charCodes[currentChar] == CHAR_DIGIT)
-  {
-    count++;
-    colNo++;
-  }
-  // neu so ky tu <9 => ok
-  if(count<=9)
-  {
-    colNo=c;
-    while(charCodes[currentChar] == CHAR_DIGIT) {
+
+  while(charCodes[currentChar] == CHAR_DIGIT) {
     token->string[counter++] = currentChar;
     readChar();
   }
@@ -89,6 +78,37 @@ Token* readNumber(void) {
   token->value = atoi(token->string);
 
   return token;
+}
+*/
+Token* readNumber(void) {
+  Token *token = makeToken(TK_NUMBER, lineNo, colNo);
+  int counter = 0;
+
+  
+  //dem so ky tu cua so
+  int count = 0;
+  int c = colNo;
+
+  while (charCodes[currentChar] == CHAR_DIGIT)
+  {
+    count++;
+    colNo++;
+  }
+  colNo=c;
+  // neu so ky tu <9 => ok
+  if(count<=9)
+  {
+    
+    while(charCodes[currentChar] == CHAR_DIGIT) 
+    {
+      token->string[counter++] = currentChar;
+      readChar();
+    }
+  
+    token->string[counter] = '\0';
+    token->value = atoi(token->string);
+
+    return token;
   }
   // neu so ky tu >10 => dua ra thong bao loi
   else if(count>10)
@@ -97,8 +117,8 @@ Token* readNumber(void) {
     return token;
   }
 
-  else{
-    colNo=c;
+  else
+  {
     char num[10];
     int i;
     for(i=0;i<10;i++)
@@ -115,16 +135,16 @@ Token* readNumber(void) {
     }
     else // neu ko, doc vao token
     {
-      colNo=c;
-    while(charCodes[currentChar] == CHAR_DIGIT) {
-    token->string[counter++] = currentChar;
-    readChar();
-  }
+      while(charCodes[currentChar] == CHAR_DIGIT) 
+      {
+        token->string[counter++] = currentChar;
+        readChar();
+      }
   
-  token->string[counter] = '\0';
-  token->value = atoi(token->string);
+      token->string[counter] = '\0';
+      token->value = atoi(token->string);
 
-  return token;
+      return token;
     }
   }
 }
@@ -362,7 +382,7 @@ void printToken(Token *token) {
 //ham xuat ra file .txt
 void writeToken(Token *token) {
   FILE *outputFile;
-  outputFile = fopen("C:\\Users\\trong\\OneDrive\\Documents\\GitHub\\chuong_trinh_dich\\PTTV_incompleted\\save.txt","a+");
+  outputFile = fopen("C:\\Users\\Admin\\Documents\\GitHub\\chuong_trinh_dich\\PTTV_incompleted\\save.txt","a+");
   fprintf(outputFile,"%d-%d:", token->lineNo, token->colNo);
 
   switch (token->tokenType) {

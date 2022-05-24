@@ -8,7 +8,6 @@
 #include "reader.h"
 
 FILE *inputStream;
-
 int lineNo, colNo;
 int currentChar;
 
@@ -22,24 +21,10 @@ int readChar(void) {
   return currentChar;
 }
 
-int dem(void)
-{
-  int count = 0;
-  int curchar = getc(inputStream);
-  colNo ++;
-  if (curchar == '\n') {
-    lineNo ++;
-    colNo = 0;
-  }
-  return currentChar;
-}
-
 int openInputStream(char *fileName) {
-  inputStream = fopen("C:\\Users\\Admin\\Documents\\GitHub\\chuong_trinh_dich\\PTTV_incompleted\\example2.kpl", "rt");
-    if (inputStream == NULL)
-    {printf("Khong thay");return IO_ERROR;}
-    else printf("Da mo xong");
-
+  inputStream = fopen(fileName, "rt");
+  if (inputStream == NULL)
+    return IO_ERROR;
   lineNo = 1;
   colNo = 0;
   readChar();
